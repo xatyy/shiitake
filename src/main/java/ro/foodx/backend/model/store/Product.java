@@ -1,4 +1,4 @@
-package ro.foodx.backend.model;
+package ro.foodx.backend.model.store;
 
 
 import jakarta.persistence.*;

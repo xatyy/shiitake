@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:passwd}
+
+
+springdoc:
+  paths-to-match: /**
+  packages-to-scan: ro.foodx.backend
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+    endpoints:
+      web:
+        exposure:
+          include: "*"
+
+logging:
+  level:
+    org.springframework: INFO
+    ro.foodx.backend: INFO
+
+jwt:
+  secretKey: secret
+  issuer: ${JWT_ISSUER:https://foodx.ro}
+  expirationMinute: 10
+
+
+swagger:
+    contact-name: Anthony Esber
+    contact-mail: ${SWAGGER_CONTACT_MAIL:chary@foodx.ro}
+    app-name: ${SWAGGER_APP_NAME:FoodX backend API}
+    app-description: "Platforma de back-end pentru aplicatia foodx clients si foodx partners."
+    app-version: ${SWAGGER_APP_VERSION:0.0.1}

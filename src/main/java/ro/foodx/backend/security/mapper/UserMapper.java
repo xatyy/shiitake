@@ -1,10 +1,14 @@
 package ro.foodx.backend.security.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 import ro.foodx.backend.model.user.User;
 import ro.foodx.backend.security.dto.AuthenticatedUserDto;
 import ro.foodx.backend.security.dto.RegistrationRequest;
 
+
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);

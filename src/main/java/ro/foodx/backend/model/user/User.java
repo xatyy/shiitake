@@ -21,9 +21,13 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    private String username;
+
     private String password;
 
     private String phoneNumber;
+
+    private Boolean isConfirmed;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;

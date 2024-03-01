@@ -6,7 +6,7 @@ public class ProjectConstants {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    public static final Locale ROMANIAN_LOCALE = new Locale.Builder().setLanguage("en").setRegion("RO").build();
+    public static final Locale ROMANIAN_LOCALE = new Locale.Builder().setLanguage("ro").setRegion("RO").build();
 
     private ProjectConstants() {
 

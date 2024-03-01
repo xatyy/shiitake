@@ -40,13 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String header = req.getHeader(SecurityConstants.HEADER_STRING);
 
-        String email = null;
+        String username = null;
         String authToken = null;
 
         if (Objects.nonNull(header) && header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             authToken = header.replace(SecurityConstants.TOKEN_PREFIX, StringUtils.EMPTY);
             try {
-                email = jwtTokenManager.getEmailFromToken(authToken);
+                username = jwtTokenManager.getEmailFromToken(authToken);
             }
             catch (Exception e) {
                 log.error("Authentication Exception : {}", e.getMessage());
@@ -55,16 +55,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final SecurityContext securityContext = SecurityContextHolder.getContext();
 
-        if (Objects.nonNull(email) && Objects.isNull(securityContext.getAuthentication())) {
+        if (Objects.nonNull(username) && Objects.isNull(securityContext.getAuthentication())) {
 
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if(jwtTokenManager.validateToken(authToken, userDetails.getUsername())) {
                 final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
 
-                log.info("Authentication successful. Logged in email : {}", email);
+                log.info("Authentication successful. Logged in email : {}", username);
 
                 securityContext.setAuthentication(authentication);
 

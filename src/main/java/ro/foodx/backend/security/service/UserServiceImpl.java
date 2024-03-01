@@ -30,9 +30,9 @@ public class UserServiceImpl implements UserService{
     private final GeneralMessageAccessor generalMessageAccessor;
 
     @Override
-    public User findByEmail(String email) {
+    public User findByUsername(String username) {
 
-        return userRepository.findByEmail(email);
+        return userRepository.findByUsername(username);
     }
 
     @Override
@@ -55,9 +55,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public AuthenticatedUserDto findAuthenticatedUserByEmail(String email) {
+    public AuthenticatedUserDto findAuthenticatedUserByUsername(String username) {
 
-        final User user = findByEmail(email);
+        final User user = findByUsername(username);
 
         return UserMapper.INSTANCE.convertToAuthenticatedUserDto(user);
     }

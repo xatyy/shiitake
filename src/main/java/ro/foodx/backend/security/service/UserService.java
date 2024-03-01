@@ -6,11 +6,11 @@ import ro.foodx.backend.security.dto.RegistrationRequest;
 import ro.foodx.backend.security.dto.RegistrationResponse;
 
 public interface UserService {
-    User findByEmail(String email);
+    User findByUsername(String username);
 
     RegistrationResponse registration(RegistrationRequest registrationRequest);
 
-    AuthenticatedUserDto findAuthenticatedUserByEmail(String email);
+    AuthenticatedUserDto findAuthenticatedUserByUsername(String username);
 
 
 }

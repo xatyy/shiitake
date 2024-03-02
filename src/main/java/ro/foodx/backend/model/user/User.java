@@ -2,6 +2,7 @@ package ro.foodx.backend.model.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ro.foodx.backend.model.store.Store;
 
 @Getter
 @Setter
@@ -31,4 +32,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @OneToOne(mappedBy = "user")
+    private Store store;
+
 }

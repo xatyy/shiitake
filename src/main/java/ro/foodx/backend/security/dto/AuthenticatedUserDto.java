@@ -11,6 +11,8 @@ import ro.foodx.backend.model.user.UserRole;
 @NoArgsConstructor
 public class AuthenticatedUserDto {
 
+    private Long id;
+
     private String firstName;
 
     private String lastName;

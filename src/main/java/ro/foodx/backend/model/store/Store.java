@@ -3,6 +3,7 @@ package ro.foodx.backend.model.store;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ro.foodx.backend.model.user.User;
 
 @Getter
 @Setter
@@ -16,11 +17,14 @@ public class Store {
     @GeneratedValue
     private Long id;
 
-    private Long sellerId;
 
     private String storeName;
 
     private String description;
+
+    private String address;
+
+    private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     private StoreType cuisineType;
@@ -30,5 +34,9 @@ public class Store {
     private String coverPicURL;
 
     private Boolean adminConfirmed;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "seller_id", referencedColumnName = "id")
+    private User user;
 
 }

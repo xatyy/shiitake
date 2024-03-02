@@ -15,6 +15,8 @@ import ro.foodx.backend.security.mapper.UserMapper;
 import ro.foodx.backend.service.UserValidationService;
 import ro.foodx.backend.utils.GeneralMessageAccessor;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService{
 
         return userRepository.findByUsername(username);
     }
+
 
     @Override
     public RegistrationResponse registration(RegistrationRequest registrationRequest) {
@@ -61,4 +64,5 @@ public class UserServiceImpl implements UserService{
 
         return UserMapper.INSTANCE.convertToAuthenticatedUserDto(user);
     }
+
 }

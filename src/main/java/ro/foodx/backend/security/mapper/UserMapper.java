@@ -7,6 +7,8 @@ import ro.foodx.backend.model.user.User;
 import ro.foodx.backend.security.dto.AuthenticatedUserDto;
 import ro.foodx.backend.security.dto.RegistrationRequest;
 
+import java.util.Optional;
+
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {

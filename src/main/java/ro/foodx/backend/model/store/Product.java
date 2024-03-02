@@ -2,6 +2,7 @@ package ro.foodx.backend.model.store;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter
@@ -37,8 +38,10 @@ public class Product {
 
     private int customerRestriction;
 
+    @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
     private String collectStart;
 
+    @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
     private String collectEnd;
 
 }

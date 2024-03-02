@@ -5,8 +5,11 @@ import ro.foodx.backend.security.dto.AuthenticatedUserDto;
 import ro.foodx.backend.security.dto.RegistrationRequest;
 import ro.foodx.backend.security.dto.RegistrationResponse;
 
+import java.util.Optional;
+
 public interface UserService {
     User findByUsername(String username);
+
 
     RegistrationResponse registration(RegistrationRequest registrationRequest);
 

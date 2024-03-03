@@ -53,14 +53,11 @@ public class StoreController {
     }
 
 
-    //TODO: Finalize implementing the edit procedure.
-    /*
     @PatchMapping("/{id}")
-    public ResponseEntity<StoreEditResponse> updateStore(@Valid @PathVariable Long id, @RequestBody StoreEditRequest storeEditRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+    public ResponseEntity<StoreEditResponse> updateStore(@Valid @PathVariable Long id, @RequestBody StoreEditRequest storeEditRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         final StoreEditResponse storeEditResponse = storeService.editStore(storeEditRequest, id, token);
         return ResponseEntity.status(HttpStatus.CREATED).body(storeEditResponse);
     }
-*/
 
 
      @DeleteMapping("/{id}")

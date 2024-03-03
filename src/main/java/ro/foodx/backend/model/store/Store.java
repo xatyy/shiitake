@@ -17,7 +17,6 @@ public class Store {
     @GeneratedValue
     private Long id;
 
-
     private String storeName;
 
     private String description;
@@ -34,6 +33,12 @@ public class Store {
     private String coverPicURL;
 
     private Boolean adminConfirmed;
+
+    private String cui;
+
+    private String companyName;
+
+    private String nrRegCom;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")

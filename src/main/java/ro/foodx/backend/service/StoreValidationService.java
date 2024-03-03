@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.exceptions.StoreCreationException;
+import ro.foodx.backend.exceptions.StoreEditException;
+import ro.foodx.backend.model.user.User;
 import ro.foodx.backend.repository.StoreRepository;
+import ro.foodx.backend.repository.UserRepository;
 import ro.foodx.backend.utils.ExceptionMessageAccessor;
 import ro.foodx.backend.security.jwt.JwtTokenManager;
 
@@ -16,8 +19,11 @@ import ro.foodx.backend.security.jwt.JwtTokenManager;
 public class StoreValidationService {
     private static final String PARTNER_ALREADY_ASSOCIATED = "partner_already_associated";
 
+    private static final String PARTNER_UNAUTHORIZED = "partner_unauthorized";
+
     private final StoreRepository storeRepository;
 
+    private final UserRepository userRepository;
     private final JwtTokenManager jwt;
 
     private final ExceptionMessageAccessor exceptionMessageAccessor;
@@ -25,7 +31,15 @@ public class StoreValidationService {
     public void validateOwner(StoreEditRequest storeEditRequest, Long id, String token) {
         final String email = jwt.getEmailFromToken(token);
 
+        User user = userRepository.findByUsername(email);
 
+        Long userId = user.getId();
+        Long sellerID =  storeEditRequest.getSellerId();
+
+        if(userId != sellerID) {
+            final String unauthorizedId = exceptionMessageAccessor.getMessage(null, PARTNER_UNAUTHORIZED);
+            throw new StoreEditException(unauthorizedId);
+        }
 
 
     }

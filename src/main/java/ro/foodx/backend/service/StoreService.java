@@ -12,7 +12,7 @@ public interface StoreService {
 
     List<Store> getAllStores();
     Optional<Store> getStoreById(Long id);
-    StoreCreateResponse saveStore(StoreCreateRequest storeCreateRequest);
+    StoreCreateResponse saveStore(StoreCreateRequest storeCreateRequest, String token);
     StoreEditResponse editStore(StoreEditRequest storeEditRequest, Long id, String token);
     void deleteStore(Long id);
 }

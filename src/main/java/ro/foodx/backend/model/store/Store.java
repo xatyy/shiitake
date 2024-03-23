@@ -1,9 +1,13 @@
 package ro.foodx.backend.model.store;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import ro.foodx.backend.model.user.User;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,6 +46,11 @@ public class Store {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
+    @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "store")
+    @JsonIgnore
+    private Set<Product> product;
 
 }

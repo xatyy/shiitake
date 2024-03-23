@@ -17,8 +17,6 @@ public class Product {
     @GeneratedValue
     private Long id;
 
-    private Long storeId;
-
     private String productName;
 
     private String productDescription;
@@ -27,22 +25,29 @@ public class Product {
 
     private String productImage;
 
-    private Long categoryId;
-
     private Boolean isBag;
+
+    private Boolean isPublished;
 
     private int quantity;
 
     @Enumerated(EnumType.STRING)
-    private BagSizes bagSize;
+    private BagSize bagSize;
 
     private int customerRestriction;
-
 
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
     private String collectStart;
 
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
     private String collectEnd;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name  = "store_id", referencedColumnName = "id")
+    private Store store;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name  = "category_id", referencedColumnName = "id")
+    private Category category;
 
 }

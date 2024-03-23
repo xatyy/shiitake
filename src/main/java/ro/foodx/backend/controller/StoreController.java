@@ -1,20 +1,19 @@
 package ro.foodx.backend.controller;
 
-
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import ro.foodx.backend.dto.product.ProductCreateRequest;
+import ro.foodx.backend.dto.product.ProductCreateResponse;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreCreateResponse;
 import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.dto.store.StoreEditResponse;
+import ro.foodx.backend.model.store.Product;
 import ro.foodx.backend.model.store.Store;
-import ro.foodx.backend.repository.StoreRepository;
-import ro.foodx.backend.security.dto.RegistrationRequest;
-import ro.foodx.backend.security.dto.RegistrationResponse;
+import ro.foodx.backend.service.ProductService;
 import ro.foodx.backend.service.StoreService;
 
 import java.util.List;
@@ -25,16 +24,22 @@ import java.util.Optional;
 public class StoreController {
 
     private final StoreService storeService;
+    private final ProductService productService;
 
-    public StoreController(StoreService storeService) {
+    public StoreController(StoreService storeService, ProductService productService) {
         this.storeService = storeService;
+        this.productService = productService;
     }
 
-    @GetMapping
-    @Secured("USER")
+    @GetMapping()
     public ResponseEntity<List<Store>> getAllStores() {
         List<Store> stores = storeService.getAllStores();
         return ResponseEntity.ok(stores);
+    }
+    @GetMapping("/{storeId}/product")
+    public ResponseEntity<List<Product>> getProductsByStoreId(@PathVariable Long storeId) {
+        List<Product> products = productService.getProductsByStoreId(storeId);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
@@ -45,12 +50,21 @@ public class StoreController {
     }
 
     @PostMapping
-    public ResponseEntity<StoreCreateResponse> addStore(@Valid @RequestBody StoreCreateRequest storeCreateRequest ) {
+    public ResponseEntity<StoreCreateResponse> addStore(@Valid @RequestBody StoreCreateRequest storeCreateRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token ) {
 
-        final StoreCreateResponse storeCreateResponse = storeService.saveStore(storeCreateRequest);
+        final StoreCreateResponse storeCreateResponse = storeService.saveStore(storeCreateRequest, token);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(storeCreateResponse);
     }
+
+    @PostMapping("/{storeId}/product")
+    public ResponseEntity<ProductCreateResponse> addProduct(@Valid @PathVariable Long storeId, @RequestBody ProductCreateRequest productCreateRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token ) {
+
+        final ProductCreateResponse productCreateResponse = productService.saveProduct(productCreateRequest, storeId, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productCreateResponse);
+    }
+
 
 
     @PatchMapping("/{id}")

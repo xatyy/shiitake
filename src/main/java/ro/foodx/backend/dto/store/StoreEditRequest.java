@@ -14,8 +14,6 @@ import ro.foodx.backend.model.store.StoreType;
 @Setter
 @AllArgsConstructor
 public class StoreEditRequest {
-    @NotNull(message = "{login_email_not_empty}")
-    private Long sellerId;
 
     @NotEmpty(message = "{login_password_not_empty}")
     private String storeName;

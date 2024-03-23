@@ -18,4 +18,12 @@ public class StoreControllerAdvice {
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @ExceptionHandler(StoreEditException.class)
+    ResponseEntity<ApiExceptionResponse> handleStoreException(StoreEditException exception) {
+
+        final ApiExceptionResponse response = new ApiExceptionResponse(exception.getErrorMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 }

@@ -3,22 +3,26 @@ package ro.foodx.backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ro.foodx.backend.dto.product.ProductCreateRequest;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.exceptions.StoreCreationException;
 import ro.foodx.backend.exceptions.StoreEditException;
+import ro.foodx.backend.model.store.Store;
 import ro.foodx.backend.model.user.User;
 import ro.foodx.backend.repository.StoreRepository;
 import ro.foodx.backend.repository.UserRepository;
 import ro.foodx.backend.utils.ExceptionMessageAccessor;
 import ro.foodx.backend.security.jwt.JwtTokenManager;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreValidationService {
     private static final String PARTNER_ALREADY_ASSOCIATED = "partner_already_associated";
-
     private static final String PARTNER_UNAUTHORIZED = "partner_unauthorized";
 
     private final StoreRepository storeRepository;
@@ -28,33 +32,59 @@ public class StoreValidationService {
 
     private final ExceptionMessageAccessor exceptionMessageAccessor;
 
-    public void validateOwner(StoreEditRequest storeEditRequest, Long id, String token) {
-        final String email = jwt.getEmailFromToken(token);
+    /*
+
+    public void validateProductCreation(ProductCreateRequest productCreateRequest, Long id, String token){
+        String rawToken = token.replace("Bearer ", "");
+        final String email = jwt.getEmailFromToken(rawToken);
 
         User user = userRepository.findByUsername(email);
+        Optional<Store> store = storeRepository.findById(id);
+
+    } */
+
+    public void validateOwner(Long id, String token) {
+        String rawToken = token.replace("Bearer ", "");
+
+
+        final String email = jwt.getEmailFromToken(rawToken);
+        User user = userRepository.findByUsername(email);
+        Optional<Store> store = storeRepository.findById(id);
 
         Long userId = user.getId();
-        Long sellerID =  storeEditRequest.getSellerId();
+        User storeUser =  store.get().getUser();
+        Long sellerID = storeUser.getId();
 
-        if(userId != sellerID) {
+        if(!Objects.equals(userId, sellerID)) {
+            log.warn("SellerID and UserID not equal!");
+
             final String unauthorizedId = exceptionMessageAccessor.getMessage(null, PARTNER_UNAUTHORIZED);
             throw new StoreEditException(unauthorizedId);
         }
-
-
     }
 
-    public void validateUser(StoreCreateRequest storeCreateRequest) {
-
+    public void validateUser(StoreCreateRequest storeCreateRequest, String token) {
+        String rawToken = token.replace("Bearer ", "");
+        final String email = jwt.getEmailFromToken(rawToken);
         final Long sellerId = storeCreateRequest.getSellerId();
-
-        checkId(sellerId);
+        checkId(sellerId, email);
     }
 
 
-    private void checkId(Long sellerId) {
+    private void checkId(Long sellerId, String email) {
 
-        final boolean existsById = storeRepository.existsById(sellerId);
+        final User user = userRepository.findByUsername(email);
+
+        final boolean existsById = storeRepository.existsByUser_Id(sellerId);
+
+        final Long userId = user.getId();
+
+        if(!Objects.equals(userId, sellerId)){
+            log.warn("{} and {} are not the same sellers!", sellerId, userId);
+
+            final String unauthorizedId = exceptionMessageAccessor.getMessage(null, PARTNER_UNAUTHORIZED);
+            throw new StoreCreationException(unauthorizedId);
+        }
 
         if (existsById) {
 

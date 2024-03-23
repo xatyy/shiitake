@@ -1,5 +1,5 @@
 package ro.foodx.backend.model.store;
 
-public enum BagSizes {
+public enum BagSize {
     S, M, L
 }

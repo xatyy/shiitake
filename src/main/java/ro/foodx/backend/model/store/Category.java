@@ -1,11 +1,11 @@
 package ro.foodx.backend.model.store;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,6 +18,11 @@ public class Category {
     @Id
     @GeneratedValue
     private Long id;
-    private Long storeId;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JoinColumn(name  = "store_id", referencedColumnName = "id")
+    private Store store;
+
     private String categoryName;
 }

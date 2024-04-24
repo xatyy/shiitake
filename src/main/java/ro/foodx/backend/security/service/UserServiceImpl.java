@@ -31,10 +31,17 @@ public class UserServiceImpl implements UserService{
 
     private final GeneralMessageAccessor generalMessageAccessor;
 
+
     @Override
     public User findByUsername(String username) {
 
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public UserRole getRoleByToken(String token) {
+        User user = userValidationService.returnUserFromToken(token);
+        return user.getUserRole();
     }
 
 
@@ -62,6 +69,8 @@ public class UserServiceImpl implements UserService{
     public AuthenticatedUserDto findAuthenticatedUserByUsername(String username) {
 
         final User user = findByUsername(username);
+
+        log.info("{} Test passed", user.getId());
 
         return UserMapper.INSTANCE.convertToAuthenticatedUserDto(user);
     }

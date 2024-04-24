@@ -14,7 +14,7 @@ import ro.foodx.backend.model.store.BagSize;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ProductCreateRequest {
+public class ProductEditRequest {
 
     @NotNull(message = "{login_email_not_empty}")
     private Long categoryId;
@@ -25,21 +25,22 @@ public class ProductCreateRequest {
     @NotEmpty(message = "{login_password_not_empty}")
     private String productDescription;
 
-    @NotNull(message = "{login_password_not_empty}")
+    @NotEmpty(message = "{login_password_not_empty}")
     private Double price;
 
     @NotEmpty(message = "{login_password_not_empty}")
     private String productImage;
 
-    @NotNull(message = "{login_password_not_empty}")
-    private Boolean isBag;
+    @NotEmpty(message = "{login_password_not_empty}")
+    private boolean isBag;
 
-    @NotNull(message = "{login_password_not_empty}")
-    private Boolean isPublished;
+    @NotEmpty(message = "{login_password_not_empty}")
+    private boolean isPublished;
 
-    @NotNull(message = "{login_password_not_empty}")
+    @NotEmpty(message = "{login_password_not_empty}")
     private int quantity;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private BagSize bagSize;
 
@@ -52,6 +53,5 @@ public class ProductCreateRequest {
 
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
     private String collectEnd;
-
 
 }

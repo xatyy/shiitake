@@ -1,9 +1,12 @@
 package ro.foodx.backend.model.store;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,8 +28,10 @@ public class Product {
 
     private String productImage;
 
+    @Column(nullable = false)
     private Boolean isBag;
 
+    @Column(nullable = false)
     private Boolean isPublished;
 
     private int quantity;
@@ -49,5 +54,6 @@ public class Product {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name  = "category_id", referencedColumnName = "id")
     private Category category;
+
 
 }

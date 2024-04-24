@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ro.foodx.backend.model.user.UserRole;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class AuthenticatedUserDto {
 
-    private Long id;
+    private UUID id;
 
     private String firstName;
 

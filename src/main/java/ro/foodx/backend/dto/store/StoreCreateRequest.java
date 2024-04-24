@@ -10,12 +10,14 @@ import lombok.Getter;
 import lombok.Setter;
 import ro.foodx.backend.model.store.StoreType;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 public class StoreCreateRequest {
     @NotNull(message = "{login_email_not_empty}")
-    private Long sellerId;
+    private UUID sellerId;
 
     @NotEmpty(message = "{login_password_not_empty}")
     private String storeName;

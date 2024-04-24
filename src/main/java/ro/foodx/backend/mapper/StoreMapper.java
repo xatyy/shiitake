@@ -3,9 +3,15 @@ package ro.foodx.backend.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+import ro.foodx.backend.dto.category.CategoryCreateRequest;
+import ro.foodx.backend.dto.category.CategoryEditRequest;
 import ro.foodx.backend.dto.product.ProductCreateRequest;
+import ro.foodx.backend.dto.product.ProductEditRequest;
+import ro.foodx.backend.dto.reservation.ReservationCreateRequest;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreEditRequest;
+import ro.foodx.backend.model.reservation.Reservation;
+import ro.foodx.backend.model.store.Category;
 import ro.foodx.backend.model.store.Product;
 import ro.foodx.backend.model.store.Store;
 
@@ -18,5 +24,11 @@ public interface StoreMapper {
     Store convertToStore(StoreEditRequest storeEditRequest);
 
     Product converToProduct(ProductCreateRequest productCreateRequest);
+    Product converToProduct(ProductEditRequest productEditRequest);
+
+    Category convertToCategory(CategoryCreateRequest categoryCreateRequest);
+    Category convertToCategory(CategoryEditRequest categoryEditRequest);
+
+    Reservation convertToReservation(ReservationCreateRequest reservationCreateRequest);
 
 }

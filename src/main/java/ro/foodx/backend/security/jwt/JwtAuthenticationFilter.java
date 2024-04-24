@@ -3,6 +3,7 @@ package ro.foodx.backend.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,9 @@ import ro.foodx.backend.security.service.UserDetailsServiceImpl;
 import ro.foodx.backend.security.utils.SecurityConstants;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,6 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = null;
         String authToken = null;
 
+
+/*
         if (Objects.nonNull(header) && header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             authToken = header.replace(SecurityConstants.TOKEN_PREFIX, StringUtils.EMPTY);
             try {
@@ -53,6 +58,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             catch (Exception e) {
                 log.error("Authentication Exception : {}", e.getMessage());
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Test", e);
+            }
+        } */
+
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            Optional<Cookie> jwtCookie = Arrays.stream(cookies)
+                    .filter(cookie -> SecurityConstants.COOKIE_NAME.equals(cookie.getName()))
+                    .findFirst();
+
+            if (jwtCookie.isPresent()) {
+                authToken = jwtCookie.get().getValue();
+                try {
+                    username = jwtTokenManager.getEmailFromToken(authToken);
+                }
+                catch (Exception e) {
+                    log.error("Authentication Exception : {}", e.getMessage());
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Test", e);
+                }
             }
         }
 

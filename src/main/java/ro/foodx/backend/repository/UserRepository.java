@@ -2,11 +2,15 @@ package ro.foodx.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ro.foodx.backend.model.user.User;
+import ro.foodx.backend.model.user.UserRole;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.UUID;
+
+public interface UserRepository extends JpaRepository<User, UUID> {
     User findByUsername(String username);
 
-    User findOneById(Long id);
+    User findOneById(UUID id);
+
 
     boolean existsByEmail(String email);
 

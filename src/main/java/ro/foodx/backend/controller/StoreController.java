@@ -5,14 +5,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.foodx.backend.dto.category.CategoryCreateRequest;
+import ro.foodx.backend.dto.category.CategoryCreateResponse;
 import ro.foodx.backend.dto.product.ProductCreateRequest;
 import ro.foodx.backend.dto.product.ProductCreateResponse;
+import ro.foodx.backend.dto.product.ProductEditRequest;
+import ro.foodx.backend.dto.product.ProductEditResponse;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreCreateResponse;
 import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.dto.store.StoreEditResponse;
 import ro.foodx.backend.model.store.Product;
 import ro.foodx.backend.model.store.Store;
+import ro.foodx.backend.service.CategoryService;
 import ro.foodx.backend.service.ProductService;
 import ro.foodx.backend.service.StoreService;
 
@@ -25,10 +30,12 @@ public class StoreController {
 
     private final StoreService storeService;
     private final ProductService productService;
+    private final CategoryService categoryService;
 
-    public StoreController(StoreService storeService, ProductService productService) {
+    public StoreController(StoreService storeService, ProductService productService, CategoryService categoryService) {
         this.storeService = storeService;
         this.productService = productService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping()
@@ -63,6 +70,20 @@ public class StoreController {
         final ProductCreateResponse productCreateResponse = productService.saveProduct(productCreateRequest, storeId, token);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productCreateResponse);
+    }
+
+    @PostMapping("/{storeId}/category")
+    public ResponseEntity<CategoryCreateResponse> addCategory(@Valid @PathVariable Long storeId, @RequestBody CategoryCreateRequest categoryCreateRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token ) {
+
+        final CategoryCreateResponse categoryCreateResponse = categoryService.saveCategory(categoryCreateRequest, storeId, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryCreateResponse);
+    }
+
+    @PatchMapping("/{storeId}/product/{id}")
+    public ResponseEntity<ProductEditResponse> updateProduct(@Valid @PathVariable Long storeId, @PathVariable Long id, @RequestBody ProductEditRequest productEditRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        final ProductEditResponse productEditResponse = productService.editProduct(productEditRequest, storeId, id, token);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productEditResponse);
     }
 
 

@@ -17,6 +17,7 @@ import ro.foodx.backend.security.jwt.JwtTokenManager;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -51,13 +52,21 @@ public class StoreValidationService {
         User user = userRepository.findByUsername(email);
         Optional<Store> store = storeRepository.findById(id);
 
-        Long userId = user.getId();
-        User storeUser =  store.get().getUser();
-        Long sellerID = storeUser.getId();
+        UUID userId = user.getId();
+        if (store.isPresent()) {
+            User storeUser = store.get().getUser();
 
-        if(!Objects.equals(userId, sellerID)) {
-            log.warn("SellerID and UserID not equal!");
 
+            UUID sellerID = storeUser.getId();
+
+
+            if (!Objects.equals(userId, sellerID)) {
+                log.warn("SellerID and UserID not equal!");
+
+                final String unauthorizedId = exceptionMessageAccessor.getMessage(null, PARTNER_UNAUTHORIZED);
+                throw new StoreEditException(unauthorizedId);
+            }
+        } else {
             final String unauthorizedId = exceptionMessageAccessor.getMessage(null, PARTNER_UNAUTHORIZED);
             throw new StoreEditException(unauthorizedId);
         }
@@ -66,18 +75,18 @@ public class StoreValidationService {
     public void validateUser(StoreCreateRequest storeCreateRequest, String token) {
         String rawToken = token.replace("Bearer ", "");
         final String email = jwt.getEmailFromToken(rawToken);
-        final Long sellerId = storeCreateRequest.getSellerId();
+        final UUID sellerId = storeCreateRequest.getSellerId();
         checkId(sellerId, email);
     }
 
 
-    private void checkId(Long sellerId, String email) {
+    private void checkId(UUID sellerId, String email) {
 
         final User user = userRepository.findByUsername(email);
 
         final boolean existsById = storeRepository.existsByUser_Id(sellerId);
 
-        final Long userId = user.getId();
+        final UUID userId = user.getId();
 
         if(!Objects.equals(userId, sellerId)){
             log.warn("{} and {} are not the same sellers!", sellerId, userId);

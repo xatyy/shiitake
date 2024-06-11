@@ -74,6 +74,7 @@ public class UserValidationService {
 
         final User user = userRepository.findByUsername(email);
 
+
         return user.getUserRole();
     }
 

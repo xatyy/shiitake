@@ -27,7 +27,7 @@ public class Store {
 
     private String address;
 
-    private String phoneNumber;
+    private String locality;
 
     @Enumerated(EnumType.STRING)
     private StoreType cuisineType;
@@ -38,11 +38,44 @@ public class Store {
 
     private Boolean adminConfirmed;
 
-    private String cui;
+    private String phoneNumber;
+
+    private String companyPhoneNumber;
+
+    private String companyMail;
+
+    private String headquartersLocality;
+
+    private String headquartersStreet;
+
+    private String headquartersNr;
+
+    private Long cif;
 
     private String companyName;
 
     private String nrRegCom;
+
+    private double latitude;
+
+    private double longitude;
+
+    private String ownerRole;
+
+    private Boolean isFranchise;
+
+    private Boolean isPublished;
+
+    private Boolean isOpen;
+
+    private Boolean isDenied;
+
+    private Long joinTimestamp;
+
+    @Enumerated(EnumType.STRING)
+    private DenyReason denyReason;
+
+    private String denyDetailed;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
@@ -53,4 +86,6 @@ public class Store {
     @JsonIgnore
     private Set<Product> product;
 
+    @OneToOne(mappedBy = "store")
+    private Contract contract;
 }

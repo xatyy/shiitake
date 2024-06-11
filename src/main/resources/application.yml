@@ -33,6 +33,17 @@ jwt:
   issuer: ${JWT_ISSUER:https://foodx.ro}
   expirationMinute: 7200
 
+cloud:
+  aws:
+    region:
+      static: eu-north-1
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: AKIAW3MEC6KF7RMRGIMY
+      secret-key: BApBV+dfKMojsoysDCUpA5xFRSH4pcHqOTNlz8O3ZgP+
+
 
 swagger:
     contact-name: Anthony Esber

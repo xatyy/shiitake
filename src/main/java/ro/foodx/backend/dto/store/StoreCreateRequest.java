@@ -16,7 +16,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 public class StoreCreateRequest {
-    @NotNull(message = "{login_email_not_empty}")
+
+    @NotNull
     private UUID sellerId;
 
     @NotEmpty(message = "{login_password_not_empty}")
@@ -27,14 +28,39 @@ public class StoreCreateRequest {
 
     @NotEmpty(message = "{login_password_not_empty}")
     private String address;
+
     @NotEmpty(message = "{login_password_not_empty}")
+    private String locality;
+
     private String phoneNumber;
+
+    @NotNull(message = "{login_password_not_empty}")
+    private Long cif;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private StoreType cuisineType;
+
     @NotEmpty(message = "{login_password_not_empty}")
     private String profilePicURL;
+
     @NotEmpty(message = "{login_password_not_empty}")
     private String coverPicURL;
+
+    @NotEmpty(message = "{login_password_not_empty}")
+    private String companyName;
+
+    @NotEmpty(message = "{login_password_not_empty}")
+    private String nrRegCom;
+
+    @NotNull
+    private double latitude;
+
+    @NotNull
+    private double longitude;
+
+    @NotEmpty(message = "{login_password_not_empty}")
+    private String ownerRole;
+
+    private Boolean isFranchise;
 }

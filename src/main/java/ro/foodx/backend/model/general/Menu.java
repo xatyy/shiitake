@@ -23,6 +23,8 @@ public class Menu {
 
     private String icon;
 
+    private String slug;
+
     private Boolean disabled;
 
     @Enumerated(EnumType.STRING)

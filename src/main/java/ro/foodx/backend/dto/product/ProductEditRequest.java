@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ro.foodx.backend.model.store.BagSize;
+import ro.foodx.backend.model.store.BagType;
 
 @Getter
 @Setter
@@ -42,7 +42,7 @@ public class ProductEditRequest {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private BagSize bagSize;
+    private BagType bagType;
 
     @NotEmpty(message = "{login_password_not_empty}")
     private int customerRestriction;

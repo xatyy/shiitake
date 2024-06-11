@@ -1,12 +1,14 @@
 package ro.foodx.backend.model.store;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
-import java.util.Set;
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -24,22 +26,36 @@ public class Product {
 
     private String productDescription;
 
-    private Double price;
+    private Double initialPrice;
+
+    private Double finalPrice;
 
     private String productImage;
 
     @Column(nullable = false)
-    private Boolean isBag;
-
-    @Column(nullable = false)
     private Boolean isPublished;
 
-    private int quantity;
+    private int productQuantity;
+    private int productWeight;
 
     @Enumerated(EnumType.STRING)
-    private BagSize bagSize;
+    private BagType bagType;
 
-    private int customerRestriction;
+
+    @Type(ListArrayType.class)
+    @Column(
+            name = "allergens",
+            columnDefinition = "text[]"
+    )
+    private List<String> allergens;
+
+    @Type(ListArrayType.class)
+    @Column(
+            name = "dietary",
+            columnDefinition = "text[]"
+    )
+    private List<String> dietary;
+
 
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")
     private String collectStart;

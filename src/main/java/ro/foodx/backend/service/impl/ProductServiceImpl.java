@@ -3,22 +3,31 @@ package ro.foodx.backend.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ro.foodx.backend.dto.product.ProductCreateRequest;
 import ro.foodx.backend.dto.product.ProductCreateResponse;
 import ro.foodx.backend.dto.product.ProductEditRequest;
 import ro.foodx.backend.dto.product.ProductEditResponse;
-import ro.foodx.backend.dto.store.StoreEditResponse;
 import ro.foodx.backend.mapper.StoreMapper;
 import ro.foodx.backend.model.store.*;
+import ro.foodx.backend.model.user.User;
 import ro.foodx.backend.repository.ProductRepository;
+import ro.foodx.backend.repository.ProductSpecifications;
 import ro.foodx.backend.repository.StoreRepository;
 import ro.foodx.backend.service.ProductService;
 import ro.foodx.backend.service.StoreValidationService;
+import ro.foodx.backend.service.UserValidationService;
 import ro.foodx.backend.utils.GeneralMessageAccessor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -33,13 +42,35 @@ public class ProductServiceImpl implements ProductService {
 
     private final GeneralMessageAccessor generalMessageAccessor;
 
+    private final UserValidationService userValidationService;
+
     private static final String PRODUCT_CREATION_SUCCESSFUL = "product_creation_successful";
 
     private static final String PRODUCT_MODIFIED_SUCCESSFUL = "product_modified_successful";
 
     @Override
-    public List<Product> getProductsByStoreId(Long storeId) {
-        return productRepository.findByStore_Id(storeId);
+    public Page<Product> getProductsByStoreId(Long storeId, int pageNum, int pageSize) {
+
+        return productRepository.findByStore_Id(storeId, PageRequest.of(pageNum, pageSize));
+    }
+    @Override
+    public Page<Product> getProductsFilteredAsOwner(String token, Map<String, String> filters, Pageable pageable) {
+        User user = userValidationService.returnUserFromToken(token);
+        UUID userId = user.getId();  // Assuming you're using UUID for user IDs
+        Store store = storeRepository.findOneByUser_Id(userId);  // Ensure this method correctly fetches the store
+        Long storeId = store.getId();
+
+        Specification<Product> spec = ProductSpecifications.byFilter(storeId, filters);  // Use the combined specification
+        return productRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public Page<Product> getProductsAsOwner(String token, Pageable pageable) {
+        User user = userValidationService.returnUserFromToken(token);
+        UUID userToken = user.getId();
+        Store store = storeRepository.findOneByUser_Id(userToken);
+        Long storeId = store.getId();
+        return productRepository.findByStore_Id(storeId, pageable);
     }
 
     @Override
@@ -53,15 +84,13 @@ public class ProductServiceImpl implements ProductService {
         final Product product = StoreMapper.INSTANCE.converToProduct(productCreateRequest);
         product.setStore(ownerStore);
 
-        log.info("{}",product.getIsBag());
 
         productRepository.save(product);
 
         final String productName = productCreateRequest.getProductName();
-        final Boolean productBag = productCreateRequest.getIsBag();
         final String productSuccessMessage = generalMessageAccessor.getMessage(null, PRODUCT_CREATION_SUCCESSFUL, productName);
 
-        log.info("{} added successfully! isBag? - {}", productName, productBag);
+        log.info("{} added successfully!", productName);
 
         return new ProductCreateResponse(productSuccessMessage);
 
@@ -82,13 +111,15 @@ public class ProductServiceImpl implements ProductService {
 
         String newProductName = product.getProductName();
         String newDescription = product.getProductDescription();
-        Double newPrice = product.getPrice();
+        Double newInitialPrice = product.getInitialPrice();
+        Double newFinalPrice = product.getFinalPrice();
         String newPic = product.getProductImage();
-        Boolean newIsBag = product.getIsBag();
         Boolean newIsPublished = product.getIsPublished();
-        int newQuantity = product.getQuantity();
-        BagSize newBagSize = product.getBagSize();
-        int newCustomerRestriction = product.getCustomerRestriction();
+        int newProductQuantity = product.getProductQuantity();
+        int newProductWeight = product.getProductWeight();
+        List<String> newDietary = product.getDietary();
+        List<String> newAllergens = product.getAllergens();
+        BagType newBagType = product.getBagType();
         String newCollectStart = product.getCollectStart();
         String newCollectEnd = product.getCollectEnd();
 
@@ -99,20 +130,20 @@ public class ProductServiceImpl implements ProductService {
             if(newDescription != null){
                 value.setProductDescription(newDescription);
             }
-            if(newPrice != null){
-                value.setPrice(newPrice);
+            if(newInitialPrice != null){
+                value.setInitialPrice(newInitialPrice);
+            }
+            if(newFinalPrice != null){
+                value.setInitialPrice(newFinalPrice);
             }
             if(newPic != null){
                 value.setProductImage(newPic);
             }
-            if(newIsBag != null){
-                value.setIsBag(newIsBag);
-            }
             if(newIsPublished != null){
                 value.setIsPublished(newIsPublished);
             }
-            if(newBagSize != null){
-                value.setBagSize(newBagSize);
+            if(newBagType != null){
+                value.setBagType(newBagType);
             }
             if(newCollectStart != null){
                 value.setCollectStart(newCollectStart);
@@ -120,11 +151,17 @@ public class ProductServiceImpl implements ProductService {
             if(newCollectEnd != null) {
                 value.setCollectEnd(newCollectEnd);
             }
-            if(newQuantity != value.getQuantity()){
-                value.setQuantity(newQuantity);
+            if(newProductQuantity != value.getProductQuantity()){
+                value.setProductQuantity(newProductQuantity);
             }
-            if(newCustomerRestriction != value.getCustomerRestriction()){
-                value.setQuantity(newCustomerRestriction);
+            if(newProductWeight != value.getProductWeight()){
+                value.setProductWeight(newProductWeight);
+            }
+            if(!newDietary.isEmpty()) {
+                value.setDietary(newDietary);
+            }
+            if(!newAllergens.isEmpty()) {
+                value.setAllergens(newAllergens);
             }
         });
 

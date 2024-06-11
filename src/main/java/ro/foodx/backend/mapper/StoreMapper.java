@@ -8,6 +8,7 @@ import ro.foodx.backend.dto.category.CategoryEditRequest;
 import ro.foodx.backend.dto.product.ProductCreateRequest;
 import ro.foodx.backend.dto.product.ProductEditRequest;
 import ro.foodx.backend.dto.reservation.ReservationCreateRequest;
+import ro.foodx.backend.dto.reservation.ReservationEditRequest;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.model.reservation.Reservation;
@@ -30,5 +31,6 @@ public interface StoreMapper {
     Category convertToCategory(CategoryEditRequest categoryEditRequest);
 
     Reservation convertToReservation(ReservationCreateRequest reservationCreateRequest);
+    Reservation convertToReservation(ReservationEditRequest reservationEditRequest);
 
 }

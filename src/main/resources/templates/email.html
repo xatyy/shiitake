@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email</title>
+    <style>
+        body {
+            background-color: #FFFDFC;
+            color: #411A07;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 100%;
+            height: auto;
+        }
+        .content {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .content p {
+            margin-bottom: 20px;
+        }
+        .accent {
+            color: #FB6218;
+            font-weight: bold;
+        }
+        .content a {
+            color: #FB6218;
+            text-decoration: none;
+        }
+        .footer {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer a {
+            color: #FB6218;
+            text-decoration: none;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+            }
+            .container {
+                background-color: #333333;
+                border-color: #555555;
+            }
+            .footer {
+                color: #CCCCCC;
+            }
+            .header img.light-mode {
+                display: none !important;
+            }
+            .header img.dark-mode {
+                display: block !important;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            .header img.dark-mode {
+                display: none !important;
+            }
+            .header img.light-mode {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img class="light-mode" alt="FoodX. Logo Light" src="https://foodx-media.s3.eu-north-1.amazonaws.com/logo_mail.png" style="display: block;" />
+        <img class="dark-mode" alt="FoodX. Logo Dark" src="https://foodx-media.s3.eu-north-1.amazonaws.com/logo_dark.png" style="display: none;" />
+    </div>
+    <div class="content">
+        <p>${message}</p>
+    </div>
+    <div class="footer">
+        <i>Aceasta este o notificare de sistem din partea FoodX. Reprezentantii FoodX nu vor cere niciodata credentialele contului tau.</i>
+        <p>&copy; 2024 FoodX SRL. Toate drepturile sunt rezervate.</p>
+    </div>
+</div>
+</body>
+</html>

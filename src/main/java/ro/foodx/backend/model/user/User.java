@@ -1,7 +1,9 @@
 package ro.foodx.backend.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import ro.foodx.backend.model.store.Contract;
 import ro.foodx.backend.model.store.Store;
 
 import java.util.UUID;
@@ -18,16 +20,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String firstName;
-
-    private String lastName;
+    private String fullName;
 
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String username;
 
+    @JsonIgnore
     private String password;
+
+    private Long CUI;
 
     private String phoneNumber;
 
@@ -39,6 +43,7 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Store store;
 
+
     public UUID getId() {
         return id;
     }
@@ -47,21 +52,23 @@ public class User {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public Long getCUI() {
+        return CUI;
     }
 
-    public String getLastName() {
-        return lastName;
+    public void setCUI(Long CUI) {
+        this.CUI = CUI;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
+
+
 
     public String getEmail() {
         return email;

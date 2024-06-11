@@ -4,23 +4,33 @@ package ro.foodx.backend.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ro.foodx.backend.dto.store.StoreCreateRequest;
 import ro.foodx.backend.dto.store.StoreCreateResponse;
 import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.dto.store.StoreEditResponse;
 import ro.foodx.backend.mapper.StoreMapper;
+import ro.foodx.backend.model.store.Product;
 import ro.foodx.backend.model.store.Store;
 import ro.foodx.backend.model.store.StoreType;
 import ro.foodx.backend.model.user.User;
+import ro.foodx.backend.repository.ProductSpecifications;
 import ro.foodx.backend.repository.StoreRepository;
+import ro.foodx.backend.repository.StoreSpecifications;
 import ro.foodx.backend.repository.UserRepository;
 import ro.foodx.backend.service.StoreService;
 import ro.foodx.backend.service.StoreValidationService;
+import ro.foodx.backend.service.UserValidationService;
 import ro.foodx.backend.utils.GeneralMessageAccessor;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -30,6 +40,8 @@ public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
 
     private final UserRepository userRepository;
+
+    private final UserValidationService userValidationService;
 
     private final StoreValidationService storeValidationService;
 
@@ -42,6 +54,18 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public List<Store> getAllStores() {
         return storeRepository.findAll();
+    }
+
+
+    @Override
+    public Page<Store> getStoresAsOwner(String token, Pageable pageable) {
+        return storeRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Store> getStoresFilteredAsOwner(String token, Map<String, String> filters, Pageable pageable) {
+        Specification<Store> spec = StoreSpecifications.byFilter(filters);  // Use the combined specification
+        return storeRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -60,12 +84,17 @@ public class StoreServiceImpl implements StoreService {
 
         final Store store = StoreMapper.INSTANCE.convertToStore(storeCreateRequest);
         store.setUser(ownerUser);
-        storeRepository.save(store);
+        store.setAdminConfirmed(false);
+        store.setIsPublished(false);
+        store.setIsOpen(false);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        store.setJoinTimestamp(timestamp.getTime());
+        final Store newStore = storeRepository.save(store);
 
         final String storeName = storeCreateRequest.getStoreName();
         final String storeSuccessMessage = generalMessageAccessor.getMessage(null, STORE_CREATION_SUCCESSFUL, storeName);
 
-        log.info("{} registered successfully!", storeName);
+        log.info("{} registered successfully! {}", storeName, newStore.getCif());
 
         return new StoreCreateResponse(storeSuccessMessage);
 

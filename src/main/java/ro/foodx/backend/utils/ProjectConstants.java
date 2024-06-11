@@ -8,6 +8,9 @@ public class ProjectConstants {
 
     public static final Locale ROMANIAN_LOCALE = new Locale.Builder().setLanguage("ro").setRegion("RO").build();
 
+    public static final int VERIFICATION_EXPIRATION = 60 * 24;
+
+
     private ProjectConstants() {
 
         throw new UnsupportedOperationException();

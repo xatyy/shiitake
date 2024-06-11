@@ -1,6 +1,9 @@
 package ro.foodx.backend.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +20,12 @@ import ro.foodx.backend.dto.store.StoreEditRequest;
 import ro.foodx.backend.dto.store.StoreEditResponse;
 import ro.foodx.backend.model.store.Product;
 import ro.foodx.backend.model.store.Store;
+import ro.foodx.backend.security.utils.SecurityConstants;
 import ro.foodx.backend.service.CategoryService;
 import ro.foodx.backend.service.ProductService;
 import ro.foodx.backend.service.StoreService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,11 +48,12 @@ public class StoreController {
         List<Store> stores = storeService.getAllStores();
         return ResponseEntity.ok(stores);
     }
+    /*
     @GetMapping("/{storeId}/product")
-    public ResponseEntity<List<Product>> getProductsByStoreId(@PathVariable Long storeId) {
-        List<Product> products = productService.getProductsByStoreId(storeId);
+    public ResponseEntity<List<Product>> getProductsByStoreId(@PathVariable Long storeId, int pageSize, int pageNumber) {
+        Page<Product> products = productService.getProductsByStoreId(storeId, pageNumber, pageSize);
         return ResponseEntity.ok(products);
-    }
+    }*/
 
     @GetMapping("/{id}")
     public ResponseEntity<Store> getStoreById(@PathVariable Long id) {
@@ -57,17 +63,55 @@ public class StoreController {
     }
 
     @PostMapping
-    public ResponseEntity<StoreCreateResponse> addStore(@Valid @RequestBody StoreCreateRequest storeCreateRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token ) {
+    public ResponseEntity<StoreCreateResponse> addStore(@Valid @RequestBody StoreCreateRequest storeCreateRequest, HttpServletRequest request ) {
 
-        final StoreCreateResponse storeCreateResponse = storeService.saveStore(storeCreateRequest, token);
+        String jwtToken = null;
+
+        // Retrieve the cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            Optional<Cookie> jwtCookie = Arrays.stream(cookies)
+                    .filter(cookie -> SecurityConstants.COOKIE_NAME.equals(cookie.getName()))
+                    .findFirst();
+
+            if (jwtCookie.isPresent()) {
+                jwtToken = jwtCookie.get().getValue();
+            }
+        }
+
+        if (jwtToken == null) {
+            // Handle the scenario when the token is not found in the cookie
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        final StoreCreateResponse storeCreateResponse = storeService.saveStore(storeCreateRequest, jwtToken);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(storeCreateResponse);
     }
 
     @PostMapping("/{storeId}/product")
-    public ResponseEntity<ProductCreateResponse> addProduct(@Valid @PathVariable Long storeId, @RequestBody ProductCreateRequest productCreateRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String token ) {
+    public ResponseEntity<ProductCreateResponse> addProduct(@Valid @PathVariable Long storeId, @RequestBody ProductCreateRequest productCreateRequest, HttpServletRequest request ) {
 
-        final ProductCreateResponse productCreateResponse = productService.saveProduct(productCreateRequest, storeId, token);
+        String jwtToken = null;
+
+        // Retrieve the cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            Optional<Cookie> jwtCookie = Arrays.stream(cookies)
+                    .filter(cookie -> SecurityConstants.COOKIE_NAME.equals(cookie.getName()))
+                    .findFirst();
+
+            if (jwtCookie.isPresent()) {
+                jwtToken = jwtCookie.get().getValue();
+            }
+        }
+
+        if (jwtToken == null) {
+            // Handle the scenario when the token is not found in the cookie
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        final ProductCreateResponse productCreateResponse = productService.saveProduct(productCreateRequest, storeId, jwtToken);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(productCreateResponse);
     }

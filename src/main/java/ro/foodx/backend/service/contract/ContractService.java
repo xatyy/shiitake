@@ -3,19 +3,21 @@ package ro.foodx.backend.service.contract;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.*;
 import org.docx4j.Docx4J;
 import org.docx4j.convert.out.FOSettings;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 @Getter
@@ -26,10 +28,15 @@ public class ContractService {
 
     private final S3Client s3Client;
 
+    @Value("${app.environment:dev}")
+    private String environment;
+
+    @Value("${app.local.contract-folder:tmp/contracts}")
+    private String localContractFolder;
+
     public String generateAndUploadContract(Map<String, String> placeholders) {
         File tempDocxFile = null;
         File tempPdfFile = null;
-        String url = "";
 
         try (FileInputStream fis = new FileInputStream("src/main/resources/contract-template.docx");
              FileOutputStream fos = new FileOutputStream(tempDocxFile = File.createTempFile("contract-", ".docx"))) {
@@ -49,45 +56,39 @@ public class ContractService {
                 }
             }
 
-            // Save modified document to a temporary file
             document.write(fos);
 
-            // Convert .docx to PDF
-            convertDocxToPdf(tempDocxFile, tempPdfFile = File.createTempFile("contract-", ".pdf"));
+            // Convert to PDF
+            tempPdfFile = File.createTempFile("contract-", ".pdf");
+            convertDocxToPdf(tempDocxFile, tempPdfFile);
 
-            // Upload PDF to S3
-            url = uploadToS3(tempPdfFile);
+            // Save or upload
+            if ("prod".equalsIgnoreCase(environment)) {
+                return uploadToS3(tempPdfFile);
+            } else {
+                return saveLocally(tempPdfFile);
+            }
 
         } catch (Exception e) {
-            System.err.println("Error during contract generation and upload: " + e.getMessage());
+            e.printStackTrace();
+            return "Error during contract generation: " + e.getMessage();
         } finally {
-            // Cleanup temporary files
-            if (tempDocxFile != null && !tempDocxFile.delete()) {
+            if (tempDocxFile != null && !tempDocxFile.delete())
                 System.err.println("Failed to delete temp docx file");
-            }
-            if (tempPdfFile != null && !tempPdfFile.delete()) {
-                System.err.println("Failed to delete temp pdf file");
-            }
         }
-        return url;
     }
 
     private void convertDocxToPdf(File docxFile, File pdfFile) throws Docx4JException, IOException {
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(docxFile);
-
         FOSettings foSettings = Docx4J.createFOSettings();
         foSettings.setWmlPackage(wordMLPackage);
 
         try (OutputStream os = new FileOutputStream(pdfFile)) {
             Docx4J.toFO(foSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
-        } catch (Exception e) {
-            System.err.println("Error during PDF conversion: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private String uploadToS3(File pdfFile) throws IOException {
-        String fileURL = "";
         try (FileInputStream pdfInputStream = new FileInputStream(pdfFile)) {
             String key = "contracts/" + pdfFile.getName();
             s3Client.putObject(
@@ -97,8 +98,19 @@ public class ContractService {
                             .build(),
                     RequestBody.fromInputStream(pdfInputStream, pdfInputStream.available())
             );
-            fileURL = s3Client.utilities().getUrl(builder -> builder.bucket("foodx-media").key(key)).toExternalForm();
+            return s3Client.utilities().getUrl(b -> b.bucket("foodx-media").key(key)).toExternalForm();
         }
-        return fileURL;
+    }
+
+    private String saveLocally(File pdfFile) throws IOException {
+        Path targetDir = Path.of(localContractFolder);
+        if (!Files.exists(targetDir)) {
+            Files.createDirectories(targetDir);
+        }
+
+        Path targetFile = targetDir.resolve(pdfFile.getName());
+        Files.copy(pdfFile.toPath(), targetFile);
+        System.out.println(" Saved local contract at: " + targetFile.toAbsolutePath());
+        return targetFile.toAbsolutePath().toString();
     }
 }

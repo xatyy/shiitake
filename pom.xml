@@ -11,7 +11,7 @@
 	<groupId>ro.foodx</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>backend</name>
+	<name>shiitake</name>
 	<description>Backend for FoodX built on SpringBoot</description>
 	<properties>
 		<java.version>17</java.version>
